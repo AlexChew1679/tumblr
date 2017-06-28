@@ -192,3 +192,78 @@ index.html.erb
 
                                 <%end%>
                               </div>
+
+  5. add edit and destroy
+
+                            class PostsController < ApplicationController
+
+                              def index
+                                @posts = Post.all.order('created_at DESC')
+                              end
+
+                              def new
+                                @post = Post.new
+                              end
+
+                              def create
+                                @post = Post.new(post_params)
+                                if @post.save
+                                  redirect_to @post
+                                else
+                                  render 'new'
+                                end
+                              end
+
+                              def show
+                                @post = Post.find(params[:id])
+                              end
+
+                              def edit
+                                @post = Post.find(params[:id])
+                              end
+
+                              def update
+                                @post = Post.find(params[:id])
+                                if @post.update(params[:post].permit(:title, :body))
+                                  redirect_to @post
+                                else
+                                  render 'edit'
+                                end
+                              end
+
+                              def destroy
+                                @post = Post.find(params[:id])
+                                @post.destroy
+
+                                redirect_to root_path
+
+                              end
+
+                              private
+
+                              def post_params
+                                params.require(:post).permit(:title, :body)
+                              end
+
+                            end
+
+
+     modify show.html.erb
+
+                           <div id="post_content">
+                             <h1 class= "title">
+                               <%= @post.title %>
+                             </h1>
+
+                             <p class="date">
+                               Submitted <%= time_ago_in_words(@post.created_at) %> ago
+                               <%= link_to 'Edit', edit_post_path(@post) %>
+                               <%= link_to 'Delete', post_path(@post), method: :delete, data: {confirm: 'Are you sure?'} %>
+
+                             </p>
+
+                             <p class="body">
+                               <%= @post.body %>
+                             </p>
+                           </div>
+                                  
