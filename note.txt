@@ -114,4 +114,9 @@ index.html.erb
                               </div>
                               <%end%>
 
-                
+  3. CHANGE GIT BRANCH
+
+  git checkout -b styling    <= styling is the name of the branch u wanna create,, it can be any name
+  git branch    <= to check which branch ure at
+
+  
