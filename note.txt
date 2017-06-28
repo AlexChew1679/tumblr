@@ -1,0 +1,117 @@
+rails new posts
+
+
+rails g controller posts
+rails g model Post title:string body:text
+rails db:migrate
+
+routes.rb
+
+                                Rails.application.routes.draw do
+                                  resources :posts
+                                  root "posts#index"
+                                end
+posts_controller.rb
+
+                                  class PostsController < ApplicationController
+
+                                    def index
+                                    end
+
+                                    def new
+                                    end
+
+                                    def create
+                                      @post = Post.new(post_params)
+                                      @post.save
+
+                                      redirect_to @post
+                                    end
+
+                                    def show
+                                      @post = Post.find(params[:id])
+                                    end
+
+                                    private
+
+                                    def post_params
+                                      params.require(:post).permit(:title, :body)
+                                    end
+
+                                  end
+
+  create  new.html.erb
+
+                                    <h1> Make something </h1>
+
+                                    <%= form_for :post, url: posts_path do |f| %>
+                                      <p>
+                                        <%= f.label :title %><br>
+                                        <%= f.text_field :title %>
+                                      </p>
+
+                                      <p>
+                                        <%= f.label :body %><br>
+                                        <%= f.text_area :body %>
+                                      </p>
+
+                                      <p>
+                                        <%= f.submit %><br>
+                                      </p>
+
+                                      <%end%>
+
+index.html.erb
+
+                                    <h1 class= "title">
+                                      <%= @post.title %>
+                                    </h1>
+
+                                    <p class="date">
+                                      Submitted <%= time_ago_in_words(@post.created_at) %> ago
+                                    </p>
+
+                                    <p class="body">
+                                      <%= @post.body %>
+                                    </p>
+
+2. modify PostsController
+
+                            class PostsController < ApplicationController
+
+                              def index
+                                @posts = Post.all.order('created_at DESC')
+                              end
+
+                              def new
+                              end
+
+                              def create
+                                @post = Post.new(post_params)
+                                @post.save
+
+                                redirect_to @post
+                              end
+
+                              def show
+                                @post = Post.find(params[:id])
+                              end
+
+                              private
+
+                              def post_params
+                                params.require(:post).permit(:title, :body)
+                              end
+
+                            end
+
+    modify index.html.erb
+
+                            <% @posts.each do |post| %>
+                              <div class= "post_wrapper">
+                                <h2 class="title"><%= link_to post.title, post %></h2>
+                                <p class= "date"><%= time_ago_in_words(post.created_at) %>ago</p>
+                              </div>
+                              <%end%>
+
+                
