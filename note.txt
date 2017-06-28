@@ -114,9 +114,81 @@ index.html.erb
                               </div>
                               <%end%>
 
-  3. CHANGE GIT BRANCH
+  3. CHANGE GIT BRANCH  (styling and structure)
 
   git checkout -b styling    <= styling is the name of the branch u wanna create,, it can be any name
   git branch    <= to check which branch ure at
 
-  
+  4. add this at model/post.rb
+
+                            class Post < ApplicationRecord
+                              validates :title, presence: true, length: {minimum: 5}
+                              validates :body, presence: true
+                            end
+
+    modify posts_controller.rb
+
+                              class PostsController < ApplicationController
+
+                                def index
+                                  @posts = Post.all.order('created_at DESC')
+                                end
+
+                                def new
+                                  @post = Post.new
+                                end
+
+                                def create
+                                  @post = Post.new(post_params)
+                                  if @post.save
+                                    redirect_to @post
+                                  else
+                                    render 'new'
+                                  end
+                                end
+
+                                def show
+                                  @post = Post.find(params[:id])
+                                end
+
+                                private
+
+                                def post_params
+                                  params.require(:post).permit(:title, :body)
+                                end
+
+                              end
+
+  modify new.html.erb
+
+                              <div id= "page_wrapper">
+                              <h1> Make Something </h1>
+
+                              <%= form_for :post, url: posts_path do |f| %>
+                              <% if @post.errors.any? %>
+                                <div id= "errors">
+                                  <h2><%= pluralize(@post.errors.count, "error") %> stopped this post from saving </h2>
+                                    <ul>
+                                        <% @post.errors.full_messages.each do |msg| %>
+                                        <li> <%= msg %> </li>
+                                        <%end%>
+                                    </ul>
+                                </div>
+
+                                <%end%>
+                                <p>
+                                  <%= f.label :title %><br>
+                                  <%= f.text_field :title %>
+                                </p>
+
+                                <p>
+                                  <%= f.label :body %><br>
+                                  <%= f.text_area :body %>
+                                </p>
+
+                                <p>
+                                  <%= f.submit %><br>
+                                </p>
+
+                                <%end%>
+                              </div>
