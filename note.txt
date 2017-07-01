@@ -451,3 +451,111 @@ go to pages_controller.rb create method
 
                             </div>
                           </div>
+
+
+9. Install Devise, u should know the steps
+
+but to PREVENT unauthorize user to edit, go to posts_controller.rb
+
+class PostsController < ApplicationController
+  before_action :authenticate_user!, except: [:index, :show]  <= THIS ONE
+
+  def index
+    @posts = Post.all.order('created_at DESC')
+  end
+
+
+
+
+  NameError in Posts#index
+  Showing /Users/user/Documents/Rails/tumblr/app/views/layouts/application.html.erb where line #38 raised:
+
+  undefined local variable or method `destroy_user_sessions_path' for #<#<Class:0x007fe8c90a2170>:0x007fe8c5c081a8>
+  Did you mean?  destroy_user_session_path
+                 destroy_user_session_url
+                 destroy_session_path
+  Extracted source (around line #38):
+
+          <div class="button">
+            <button class ="button"><%= link_to "Make Post", new_post_path %></button>
+            <button class = "button"><%= link_to "Sign Out", destroy_user_sessions_path,   <= HERE THE ERROR
+            method: :delete %> </button>
+            <button class ="button"><%= link_to "Back to Post Feed", root_path %></button>
+---------------------------------------------------------------------------
+  SyntaxError in PostsController#index
+
+  <%= if user_signed_in? %>   <= ERROR HERE
+        <div class="button">
+          <button class ="button"><%= link_to "Make Post", new_post_path %></button>
+          <button class = "button"><%= link_to "Sign Out", destroy_user_session_path, method: :delete %> </button>
+
+
+modify application.html.erb
+
+
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>Tumblr</title>
+      <%= csrf_meta_tags %>
+
+      <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+      <%= stylesheet_link_tag 'application', 'http://fonts.googleapis.com/css?family=Raleway:400,700' %>
+
+      <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+
+    </head>
+
+    <body>
+      <div id = "sidebar">
+        <ul>
+          <li class="category"><%= link_to "Tumblr", root_path %> </li>
+          <li><%= link_to "Posts" , root_path %>
+            <li><%= link_to "About", about_path %></li>
+          </ul>
+
+          <!-- to prevent the login button appear when already signed in  -->
+          <% if !user_signed_in? %>
+            <p class="sign_in"><%= link_to "User Login" , new_user_session_path %></p>
+          <%end%>
+    </div>
+
+      <div id="main_content">
+        <div id="header">
+          <% if current_page?(root_path) %>
+          <p> Post Feed </p>
+          <% elsif current_page?(about_path) %>
+          <p> My Site </p>
+          <% else %>
+          <%= link_to "Back to Post Feed", root_path %>
+          <%end%>
+            <!-- only after user signed in the link below will appear  -->
+            <% if user_signed_in? %>
+          <div class="button">
+            <button class ="button"><%= link_to "Make Post", new_post_path %></button>
+            <button class = "button"><%= link_to "Sign Out", destroy_user_session_path, method: :delete %> </button>
+            <button class ="button"><%= link_to "Back to Post Feed", root_path %></button>
+
+          </div>
+          <%end%>
+        </div>
+
+        <% flash.each do |name, msg| %>
+        <%= content_tag(:div, msg, class: "alert") %>s
+        <%end%>
+      <%= yield %>
+    </div>
+    </body>
+  </html>
+
+  at show.html.erb  change only this line 
+
+                <p class="date">
+                  Submitted <%= time_ago_in_words(@post.created_at) %> ago
+                  <!--prevent someone that not logged in to edit or delete  -->
+                  <% if user_signed_in? %>
+                    <%= link_to 'Edit', edit_post_path(@post) %>
+                    <%= link_to 'Delete', post_path(@post), method: :delete, data: {confirm: 'Are you sure?'} %>
+                  <%end%>
+                </p>
