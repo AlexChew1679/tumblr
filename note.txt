@@ -405,3 +405,49 @@ modify post.rb
                     validates :title, presence: true, length: {minimum: 5}
                     validates :body, presence: true
                   end
+
+8. generate Static Page
+
+rails g controller pages
+get '/about' , to: "pages#about" <= routes.rb
+
+go to pages_controller.rb create method
+
+                  def about
+                  end
+
+    create at views/pages/  about.html.erb
+
+                  <div id= "page wrapper">
+                    <div id= "profile_image">
+                      <%= image_tag "JackMa.jpg" %>
+                    </div>
+
+                    <div id= "content">
+                      <h1> Its Jack Ma </h1>
+                      <p> Ma was born in Hangzhou, Zhejiang Province, China. Ma started to study English at a young age
+                        and practiced English daily by conversing with English-speakers at Hangzhou hotel, a 40 minute bike
+                         </p>
+
+                       </div>
+                     </div>
+
+  modify application.html.erb
+
+                        <div id="main_content">
+                          <div id="header">
+                            <% if current_page?(root_path) %>
+                            <p> Post Feed </p>
+                            <% elsif current_page?(about_path) %>
+                            <p> My Site </p>
+                            <% else %>
+                            <%= link_to "Back to Post Feed", root_path %>
+                            <%end%>
+
+                            <div class="button">
+                              <button class ="button"><%= link_to "Make Post", new_post_path %></button>
+                              <button class = "button"> Log Out </button>
+                              <button class ="button"><%= link_to "Back to Post Feed", root_path %></button>
+
+                            </div>
+                          </div>
